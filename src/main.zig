@@ -10,6 +10,7 @@ pub fn main() anyerror!void {
   std.debug.print("{s}\n", .{red.to_string()});
 
   const pic = try Canvas.new(2,2);
+  pic.set(1, 0, red);
   std.debug.print("{any}", .{pic.data});
 }
 

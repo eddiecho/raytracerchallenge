@@ -24,6 +24,7 @@ pub const Canvas = struct {
     return self.data[(y * self.width) + x];
   }
 
+  // this might be nuts, might just dump to file instead
   pub fn to_string(self: @This()) []const u8 {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     var str = std.fmt.allocPrint(
