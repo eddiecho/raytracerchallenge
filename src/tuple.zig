@@ -136,7 +136,18 @@ pub const Tuple = struct {
       (self.x * other.y) - (self.y * other.x)
     );
   }
+
+  pub fn mult(self: *const Tuple, other: *const Tuple) Tuple {
+    return Tuple.init(
+      self.x * other.x,
+      self.y * other.y,
+      self.z * other.z,
+      self.w * other.w,
+    );
+  }
 };
+
+pub const Color = Tuple;
 
 const expect = std.testing.expect;
 
