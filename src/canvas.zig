@@ -41,23 +41,62 @@ pub const Canvas = struct {
     );
     defer file.close();
 
-    var buffer: [512]u8 = undefined;
+    // ppm spec says lines shouldn't be longer than 70 chars
+    var buffer: [71]u8 = undefined;
     var fba = std.heap.FixedBufferAllocator.init(&buffer);
     const allocator = fba.allocator();
+    var bytes_written: usize = 0;
 
-    var ret: usize = 0;
+    bytes_written += try file.write("P3\n");
+    {
+      const str = std.fmt.allocPrint(
+        allocator,
+        "{} {}\n",
+        .{ self.width, self.height }
+      ) catch "0 0\n";
+      bytes_written += try file.write(str);
+      bytes_written += try file.write("255\n");
+    }
 
-    var bytes_written = try file.write("P3\n");
-    ret += bytes_written;
+    const len = self.width * self.height;
+    {
+      var i: usize = 0;
+      // manually unroll the loop
+      while (i + 5 < len) : (i += 5) {
+        const one = self.data[i].to_32bit();
+        const two = self.data[i + 1].to_32bit();
+        const thr = self.data[i + 2].to_32bit();
+        const fou = self.data[i + 3].to_32bit();
+        const fiv = self.data[i + 4].to_32bit();
 
-    var str = std.fmt.allocPrint(
-      allocator,
-      "{} {}\n",
-      .{ self.width, self.height }
-    ) catch "0 0";
-    bytes_written = try file.write(str);
-    ret += bytes_written;
+        const str = std.fmt.allocPrint(
+          allocator,
+          "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {}\n",
+          .{
+            one[0], one[1], one[2],
+            two[0], two[1], two[2],
+            thr[0], thr[1], thr[2],
+            fou[0], fou[1], fou[2],
+            fiv[0], fiv[1], fiv[2],
+          }
+        ) catch "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n";
 
-    return ret;
+        bytes_written += try file.write(str);
+      }
+
+      while (i < len) : (i += 1) {
+        const col = self.data[i].to_32bit();
+        const str = std.fmt.allocPrint(
+          allocator,
+          "{} {} {} ",
+          .{ col[0], col[1], col[2] }
+        ) catch "0 0 0 ";
+        bytes_written += try file.write(str);
+      }
+    }
+
+    bytes_written += try file.write("\n");
+
+    return bytes_written;
   }
 };

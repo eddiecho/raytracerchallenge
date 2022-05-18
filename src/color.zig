@@ -1,5 +1,6 @@
 const std = @import("std");
 const Tuple = @import("tuple.zig").Tuple;
+const utils = @import("utils.zig");
 
 pub const Color = struct {
   _data: Tuple,
@@ -50,6 +51,14 @@ pub const Color = struct {
 
   pub fn b(self: *const Color) f32 {
     return self._data.z;
+  }
+
+  pub fn to_32bit(self: *const Color) [3]u8 {
+    return .{
+      utils.clamp(self.r()),
+      utils.clamp(self.g()),
+      utils.clamp(self.b())
+    };
   }
 
   pub fn to_string(self: *const Color, allocator: std.mem.Allocator) []const u8 {
