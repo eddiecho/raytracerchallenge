@@ -6,9 +6,8 @@ pub const Canvas = struct {
   width: u32,
   height: u32,
 
-  pub fn new(width: u32, height: u32) !Canvas {
-    var gpa = std.heap.page_allocator;
-    const data = try gpa.alloc(Color, width * height);
+  pub fn new(allocator: std.mem.Allocator, width: u32, height: u32) !Canvas {
+    const data = try allocator.alloc(Color, width * height);
     return Canvas {
       .data = data,
       .width = width,
@@ -25,14 +24,40 @@ pub const Canvas = struct {
   }
 
   // this might be nuts, might just dump to file instead
-  pub fn to_string(self: @This()) []const u8 {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+  pub fn to_string(self: @This(), allocator: std.mem.Allocator) []const u8 {
     var str = std.fmt.allocPrint(
-      gpa.allocator(),
+      allocator,
       "{} {}",
       .{self.width, self.height}
     ) catch "err err err";
 
     return str;
+  }
+
+  pub fn writeToPpm(self: @This()) anyerror!usize {
+    const file = try std.fs.cwd().createFile(
+      "canvas.ppm",
+      .{ .read = true },
+    );
+    defer file.close();
+
+    var buffer: [512]u8 = undefined;
+    var fba = std.heap.FixedBufferAllocator.init(&buffer);
+    const allocator = fba.allocator();
+
+    var ret: usize = 0;
+
+    var bytes_written = try file.write("P3\n");
+    ret += bytes_written;
+
+    var str = std.fmt.allocPrint(
+      allocator,
+      "{} {}\n",
+      .{ self.width, self.height }
+    ) catch "0 0";
+    bytes_written = try file.write(str);
+    ret += bytes_written;
+
+    return ret;
   }
 };

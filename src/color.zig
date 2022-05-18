@@ -52,10 +52,9 @@ pub const Color = struct {
     return self._data.z;
   }
 
-  pub fn to_string(self: *const Color) []const u8 {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+  pub fn to_string(self: *const Color, allocator: std.mem.Allocator) []const u8 {
     var str = std.fmt.allocPrint(
-      gpa.allocator(),
+      allocator,
       "{}, {}, {}",
       .{self.r(), self.g(), self.b()}
     ) catch "err, err, err";

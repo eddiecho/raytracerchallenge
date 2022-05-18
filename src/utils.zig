@@ -23,14 +23,13 @@ pub fn debugPrintStruct(obj: anytype) anyerror!void {
   }
 }
 
-pub fn readFile(filename: []const u8) anyerror![:0]const u8 {
+pub fn readFile(allocator: std.mem.Allocator, filename: []const u8) anyerror![:0]const u8 {
   var file = try std.fs.cwd().openFile(filename, .{.mode = .read_only});
   defer file.close();
 
-  var gpa = std.heap.GeneralPurposeAllocator(.{ .safety = true }){};
   var file_info = try file.stat();
 
-  const ret = try file.readToEndAlloc(gpa.allocator(), file_info.size + 1);
+  const ret = try file.readToEndAlloc(allocator, file_info.size + 1);
   ret[file_info.size] = 0;
 
   return @ptrCast([:0]const u8, ret);
