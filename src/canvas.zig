@@ -42,9 +42,10 @@ pub const Canvas = struct {
     defer file.close();
 
     // ppm spec says lines shouldn't be longer than 70 chars
-    var buffer: [71]u8 = undefined;
-    var fba = std.heap.FixedBufferAllocator.init(&buffer);
-    const allocator = fba.allocator();
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+
+    const allocator = arena.allocator();
     var bytes_written: usize = 0;
 
     bytes_written += try file.write("P3\n");
@@ -69,7 +70,7 @@ pub const Canvas = struct {
         const fou = self.data[i + 3].to_32bit();
         const fiv = self.data[i + 4].to_32bit();
 
-        const str = std.fmt.allocPrint(
+        const str = try std.fmt.allocPrint(
           allocator,
           "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {}\n",
           .{
@@ -79,18 +80,18 @@ pub const Canvas = struct {
             fou[0], fou[1], fou[2],
             fiv[0], fiv[1], fiv[2],
           }
-        ) catch "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n";
+        );
 
         bytes_written += try file.write(str);
       }
 
       while (i < len) : (i += 1) {
         const col = self.data[i].to_32bit();
-        const str = std.fmt.allocPrint(
+        const str = try std.fmt.allocPrint(
           allocator,
           "{} {} {} ",
           .{ col[0], col[1], col[2] }
-        ) catch "0 0 0 ";
+        ); // catch "y y y ";
         bytes_written += try file.write(str);
       }
     }

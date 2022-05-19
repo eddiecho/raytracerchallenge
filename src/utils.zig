@@ -38,9 +38,9 @@ pub fn readFile(allocator: std.mem.Allocator, filename: []const u8) anyerror![:0
 pub fn clamp(val: f32) u8 {
   if (val < 0.0) {
     return 0;
-  } else if (val > 1.0) {
+  } else if (val > 1.0 or f32_equals(val, 1.0)) {
     return 255;
   } else {
-    return @floatToInt(u8, val * 255);
+    return @floatToInt(u8, val * 256);
   }
 }
