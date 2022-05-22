@@ -3,3 +3,7 @@ test:
 
 build:
 	zig build
+run:
+	zig run src/main.zig
+copy_out:
+	cp canvas.ppm /mnt/c/Users/photo/Desktop

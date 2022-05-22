@@ -1,4 +1,5 @@
 const std = @import("std");
+const assert = std.debug.assert;
 const Color = @import("color.zig").Color;
 
 pub const Canvas = struct {
@@ -16,10 +17,14 @@ pub const Canvas = struct {
   }
 
   pub fn set(self: @This(), x: u32, y: u32, color: Color) void {
+    assert(x >= 0 and x < self.width);
+    assert(y >= 0 and y < self.height);
     self.data[(y * self.width) + x] = color;
   }
 
   pub fn get(self: @This(), x: u32, y: u32) Color {
+    assert(x >= 0 and x < self.width);
+    assert(y >= 0 and y < self.height);
     return self.data[(y * self.width) + x];
   }
 
@@ -91,7 +96,8 @@ pub const Canvas = struct {
           allocator,
           "{} {} {} ",
           .{ col[0], col[1], col[2] }
-        ); // catch "y y y ";
+        );
+
         bytes_written += try file.write(str);
       }
     }
