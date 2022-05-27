@@ -28,7 +28,7 @@ pub const Tuple = struct {
     };
   }
 
-  fn init(x: f32, y: f32, z: f32, w: f32) Tuple {
+  pub fn init(x: f32, y: f32, z: f32, w: f32) Tuple {
     return Tuple {
       .x = x,
       .y = y,
@@ -37,7 +37,7 @@ pub const Tuple = struct {
     };
   }
 
-  pub fn equals(self: *const Tuple, other: *const Tuple) bool {
+  pub fn eql(self: *const Tuple, other: *const Tuple) bool {
     const dim = self.dim_equals(other);
     return (dim and (self.is_vector() == other.is_vector()));
   }
@@ -155,7 +155,7 @@ test "tuple equals" {
   const one = Tuple.point(1.0, -1.0, 1.0);
   const two = Tuple.point(1.0, -1.0, 1.0000001);
 
-  try expect(one.equals(&two));
+  try expect(one.eql(&two));
 }
 
 test "tuple add" {
@@ -164,7 +164,7 @@ test "tuple add" {
 
   const c = a.add(&b);
 
-  try expect(c.equals(&Tuple.point(1, 1, 6)));
+  try expect(c.eql(&Tuple.point(1, 1, 6)));
 }
 
 test "tuple sub two points" {
@@ -172,7 +172,7 @@ test "tuple sub two points" {
   const b = Tuple.point(5, 6, 7);
 
   const c = a.sub(&b);
-  try expect(c.equals(&Tuple.vector(-2, -4, -6)));
+  try expect(c.eql(&Tuple.vector(-2, -4, -6)));
 }
 
 test "tuple sub vector from point" {
@@ -180,7 +180,7 @@ test "tuple sub vector from point" {
   const v = Tuple.vector(5, 6, 7);
 
   const pv = p.sub(&v);
-  try expect(pv.equals(&Tuple.point(-2, -4, -6)));
+  try expect(pv.eql(&Tuple.point(-2, -4, -6)));
 }
 
 test "tuple sub two vectors" {
@@ -188,24 +188,24 @@ test "tuple sub two vectors" {
   const b = Tuple.vector(5, 6, 7);
 
   const c = a.sub(&b);
-  try expect(c.equals(&Tuple.vector(-2, -4, -6)));
+  try expect(c.eql(&Tuple.vector(-2, -4, -6)));
 }
 
 test "tuple negate" {
   const a = Tuple.init(1, -2, 3, -4);
   const c = a.neg();
 
-  try expect(c.equals(&Tuple.init(-1, 2, -3, 4)));
+  try expect(c.eql(&Tuple.init(-1, 2, -3, 4)));
 }
 
 test "tuple scale" {
   const a = Tuple.init(1, -2, 3, -4);
   const ac = a.scale(3.5);
-  try expect(ac.equals(&Tuple.init(3.5, -7, 10.5, -14)));
+  try expect(ac.eql(&Tuple.init(3.5, -7, 10.5, -14)));
 
   const b = Tuple.init(1, -2, 3, -4);
   const bc = b.scale(1.0/2.0);
-  try expect(bc.equals(&Tuple.init(0.5, -1, 1.5, -2)));
+  try expect(bc.eql(&Tuple.init(0.5, -1, 1.5, -2)));
 }
 
 test "tuple mag" {
@@ -228,11 +228,11 @@ test "tuple mag" {
 test "tuple normalize" {
   const a = Tuple.vector(4, 0, 0);
   const an = a.normalize();
-  try expect(an.equals(&Tuple.vector(1, 0, 0)));
+  try expect(an.eql(&Tuple.vector(1, 0, 0)));
 
   const b = Tuple.vector(1, 2, 3);
   const bn = b.normalize();
-  try expect(bn.equals(&Tuple.vector(0.26726, 0.53453, 0.80178)));
+  try expect(bn.eql(&Tuple.vector(0.26726, 0.53453, 0.80178)));
   try expect(utils.f32_equals(bn.mag(), 1.0));
 }
 
@@ -248,6 +248,6 @@ test "tuple cross" {
   const ab = a.cross(&b);
   const ba = b.cross(&a);
 
-  try expect(ab.equals(&Tuple.vector(-1, 2, -1)));
-  try expect(ba.equals(&Tuple.vector(1, -2, 1)));
+  try expect(ab.eql(&Tuple.vector(-1, 2, -1)));
+  try expect(ba.eql(&Tuple.vector(1, -2, 1)));
 }

@@ -7,6 +7,8 @@ pub const Canvas = struct {
   width: u32,
   height: u32,
 
+  const Self = @This();
+
   pub fn new(allocator: std.mem.Allocator, width: u32, height: u32) !Canvas {
     const data = try allocator.alloc(Color, width * height);
     return Canvas {
@@ -16,20 +18,20 @@ pub const Canvas = struct {
     };
   }
 
-  pub fn set(self: @This(), x: u32, y: u32, color: Color) void {
+  pub fn set(self: *Self, x: u32, y: u32, color: Color) void {
     assert(x >= 0 and x < self.width);
     assert(y >= 0 and y < self.height);
     self.data[(y * self.width) + x] = color;
   }
 
-  pub fn get(self: @This(), x: u32, y: u32) Color {
+  pub fn get(self: *Self, x: u32, y: u32) Color {
     assert(x >= 0 and x < self.width);
     assert(y >= 0 and y < self.height);
     return self.data[(y * self.width) + x];
   }
 
   // this might be nuts, might just dump to file instead
-  pub fn to_string(self: @This(), allocator: std.mem.Allocator) []const u8 {
+  pub fn to_string(self: *const Self, allocator: std.mem.Allocator) []const u8 {
     var str = std.fmt.allocPrint(
       allocator,
       "{} {}",
@@ -39,7 +41,7 @@ pub const Canvas = struct {
     return str;
   }
 
-  pub fn writeToPpm(self: @This()) anyerror!usize {
+  pub fn writeToPpm(self: *const Self) anyerror!usize {
     const file = try std.fs.cwd().createFile(
       "canvas.ppm",
       .{ .read = true },

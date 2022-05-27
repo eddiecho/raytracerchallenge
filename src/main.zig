@@ -27,7 +27,7 @@ pub fn main() anyerror!void {
 
   const width: u32 = 900;
   const height: u32 = 550;
-  const pic = try Canvas.new(gpa.allocator(), width, height);
+  var pic = try Canvas.new(gpa.allocator(), width, height);
   const red = Color.new(1, 0, 0);
 
   while (proj.pos.x < width and proj.pos.y < height and proj.pos.y >= 0) : (proj = tick(proj, g, res)) {
