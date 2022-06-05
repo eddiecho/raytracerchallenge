@@ -67,33 +67,17 @@ fn ch4_final(allocator: *std.mem.Allocator) !void {
   const white = Color.new(1, 1, 1);
 
   const origin = Tuple.point(0, 0, 0);
+  var radian: f32 = 0.0;
+  var it: usize = 0;
 
-  var points :[12]Tuple = undefined;
+  while (it < 12) : ({ it += 1; radian += (pi / 6.0); }) {
+    const init = Matrix.translation(0, 200, 0);
+    const rotation = Matrix.rotation_z(radian);
+    const final = Matrix.translation(250, 250, 0);
 
-  points[11] = Matrix.translation(0, 200, 0)
-               .mult_vec(&origin);
-  points[2] = Matrix.translation(200, 0, 0)
-              .mult_vec(&origin);
-  points[5] = Matrix.translation(0, -200, 0)
-              .mult_vec(&origin);
-  points[8] = Matrix.translation(-200, 0, 0)
-              .mult_vec(&origin);
-
-  points[0] = Matrix.rotation_z(pi / 6.0).mult_vec(&points[11]);
-  points[1] = Matrix.rotation_z(pi / 3.0).mult_vec(&points[11]);
-
-  points[3] = Matrix.rotation_z(pi / 6.0).mult_vec(&points[2]);
-  points[4] = Matrix.rotation_z(pi / 3.0).mult_vec(&points[2]);
-
-  points[6] = Matrix.rotation_z(pi / 6.0).mult_vec(&points[5]);
-  points[7] = Matrix.rotation_z(pi / 3.0).mult_vec(&points[5]);
-
-  points[9] = Matrix.rotation_z(pi / 6.0).mult_vec(&points[8]);
-  points[10] = Matrix.rotation_z(pi / 3.0).mult_vec(&points[8]);
-
-  for (points) |point| {
-    const fin = Matrix.translation(250, 250, 0).mult_vec(&point);
-    ch4_set(&pic, fin, white);
+    const transform = final.mult(&rotation).mult(&init);
+    const point = transform.mult_vec(&origin);
+    ch4_set(&pic, point, white);
   }
 
   _ = try pic.writeToPpm();
