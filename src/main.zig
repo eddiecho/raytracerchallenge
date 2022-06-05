@@ -8,7 +8,7 @@ pub fn main() anyerror!void {
   var gpa = std.heap.GeneralPurposeAllocator(.{}){};
 
   // ch2_final(&gpa.allocator());
-  try ch4_final(&gpa.allocator());
+  try ch4_final(gpa.allocator());
 }
 
 const Projectile = struct {
@@ -28,7 +28,7 @@ fn tick(proj: Projectile, g: Tuple, res: Tuple) Projectile {
   return ret;
 }
 
-fn ch2_final(allocator: *std.mem.Allocator) !void {
+fn ch2_final(allocator: std.mem.Allocator) !void {
   const velocity = Tuple.vector(1, 1.8, 0).normalize().scale(11.25);
   var proj = Projectile {
     .pos = Tuple.point(0, 1, 0),
@@ -53,14 +53,12 @@ fn ch2_final(allocator: *std.mem.Allocator) !void {
 }
 
 const Matrix = SquareMatrix(4);
-const sqrt = std.math.sqrt;
-const pi = std.math.pi;
 
 fn ch4_set(pic: *Canvas, point: Tuple, color: Color) void {
   pic.set(@floatToInt(u32, point.x), @floatToInt(u32, point.y), color);
 }
 
-fn ch4_final(allocator: *std.mem.Allocator) !void {
+fn ch4_final(allocator: std.mem.Allocator) !void {
   const width: u32 = 500;
   const height: u32 = 500;
   var pic = try Canvas.new(allocator, width, height);
@@ -70,7 +68,8 @@ fn ch4_final(allocator: *std.mem.Allocator) !void {
   var radian: f32 = 0.0;
   var it: usize = 0;
 
-  while (it < 12) : ({ it += 1; radian += (pi / 6.0); }) {
+  // ultimately, its more stable to calculate from an offset instead of adding radian repeatedly, but its fine for now
+  while (it < 12) : ({ it += 1; radian += (std.math.pi / 6.0); }) {
     const init = Matrix.translation(0, 200, 0);
     const rotation = Matrix.rotation_z(radian);
     const final = Matrix.translation(250, 250, 0);
