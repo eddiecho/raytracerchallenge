@@ -2,7 +2,10 @@ const std = @import("std");
 const assert = std.debug.assert;
 const sqrt = std.math.sqrt;
 
+const SquareMatrix = @import("matrix.zig").SquareMatrix;
 const utils = @import("utils.zig");
+
+const Transformer = SquareMatrix(4);
 
 pub const Tuple = struct {
   x: f32,
@@ -34,6 +37,15 @@ pub const Tuple = struct {
       .y = y,
       .z = z,
       .w = w,
+    };
+  }
+
+  pub fn zero() Tuple {
+    return Tuple {
+      .x = 0,
+      .y = 0,
+      .z = 0,
+      .w = 0,
     };
   }
 
@@ -145,9 +157,11 @@ pub const Tuple = struct {
       self.w * other.w,
     );
   }
-};
 
-pub const Color = Tuple;
+  pub fn transform(self: *const Tuple, mat: *const Transformer) Tuple {
+    return mat.mult_vec(self);
+  }
+};
 
 const expect = std.testing.expect;
 
@@ -251,3 +265,4 @@ test "tuple cross" {
   try expect(ab.eql(&Tuple.vector(-1, 2, -1)));
   try expect(ba.eql(&Tuple.vector(1, -2, 1)));
 }
+

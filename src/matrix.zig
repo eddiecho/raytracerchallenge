@@ -1,5 +1,8 @@
 const std = @import("std");
 const assert = std.debug.assert;
+const cos = std.math.cos;
+const sin = std.math.sin;
+
 const utils = @import("utils.zig");
 const Tuple = @import("tuple.zig").Tuple;
 
@@ -185,6 +188,85 @@ pub fn SquareMatrix(comptime len: usize) type {
           ret.set(j, i, sign * minor / det);
         }
       }
+
+      return ret;
+    }
+
+    // TODO - i wonder if copy elision works with these
+    // otherwise, use an return parameter
+    pub fn translation(x: f32, y: f32, z: f32) Self {
+      assert(len >= 3);
+
+      var ret = Self.identity();
+      ret.set(0, 3, x);
+      ret.set(1, 3, y);
+      ret.set(2, 3, z);
+
+      return ret;
+    }
+
+    pub fn scaling(x: f32, y: f32, z: f32) Self {
+      assert(len >= 3);
+
+      var ret = Self.identity();
+
+      ret.set(0, 0, x);
+      ret.set(1, 1, y);
+      ret.set(2, 2, z);
+
+      return ret;
+    }
+
+    pub fn rotation_x(r: f32) Self {
+      assert(len >= 3);
+
+      var ret = Self.identity();
+
+      ret.set(1, 1, cos(r));
+      ret.set(1, 2, -sin(r));
+      ret.set(2, 1, sin(r));
+      ret.set(2, 2, cos(r));
+
+      return ret;
+    }
+
+    pub fn rotation_y(r: f32) Self {
+      assert(len >= 3);
+
+      var ret = Self.identity();
+
+      ret.set(0, 0, cos(r));
+      ret.set(0, 2, sin(r));
+      ret.set(2, 0, -sin(r));
+      ret.set(2, 2, cos(r));
+
+      return ret;
+    }
+
+    pub fn rotation_z(r: f32) Self {
+      assert(len >= 3);
+
+      var ret = Self.identity();
+
+      ret.set(0, 0, cos(r));
+      ret.set(0, 1, -sin(r));
+      ret.set(1, 0, sin(r));
+      ret.set(1, 1, cos(r));
+
+      return ret;
+    }
+
+    pub fn shear(xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) Self {
+      assert(len >= 3);
+
+      var ret = Self.identity();
+
+      ret.set(0, 1, xy);
+      ret.set(0, 2, xz);
+      ret.set(1, 0, yx);
+      ret.set(1, 2, yz);
+      ret.set(2, 0, zx);
+      ret.set(2, 1, zy);
 
       return ret;
     }
@@ -457,4 +539,136 @@ test "inverse multiplication" {
   const c_b_i = c.mult(&b_i);
 
   try std.testing.expect(a.eql(&c_b_i));
+}
+
+test "translation" {
+  const Matrix4 = SquareMatrix(4);
+
+  const transform = Matrix4.translation(5, -3, 2);
+
+  const p = Tuple.point(-3, 4, 5);
+  const new_p = transform.mult_vec(&p);
+  const reverse = p.transform(&transform);
+  const expected = Tuple.point(2, 1, 7);
+
+  try std.testing.expect(new_p.eql(&expected));
+  try std.testing.expect(reverse.eql(&expected));
+
+  const v = Tuple.vector(-3, 4, 5);
+  try std.testing.expect(transform.mult_vec(&v).eql(&v));
+}
+
+test "scaling" {
+  const Matrix4 = SquareMatrix(4);
+
+  const transform = Matrix4.scaling(2, 3, 4);
+
+  const p = Tuple.point(-4, 6, 8);
+  const new_p = transform.mult_vec(&p);
+  try std.testing.expect(new_p.eql(&Tuple.point(-8, 18, 32)));
+
+  const v = Tuple.vector(-4, 6, 8);
+  const new_v = transform.mult_vec(&v);
+  try std.testing.expect(new_v.eql(&Tuple.vector(-8, 18, 32)));
+
+  const t_inv = try transform.invert();
+  try std.testing.expect(t_inv.mult_vec(&v).eql(&Tuple.vector(-2, 2, 2)));
+}
+
+test "rotation x" {
+  const Matrix4 = SquareMatrix(4);
+  const pi = std.math.pi;
+  const sqrt = std.math.sqrt;
+
+  const rotation_45 = Matrix4.rotation_x(pi / 4.0);
+  const rotation_90 = Matrix4.rotation_x(pi / 2.0);
+  const p = Tuple.point(0, 1, 0);
+
+  const p_45 = rotation_45.mult_vec(&p);
+  const p_90 = rotation_90.mult_vec(&p);
+
+  try std.testing.expect(p_45.eql(&Tuple.point(0, sqrt(2.0) / 2.0, sqrt(2.0) / 2.0)));
+  try std.testing.expect(p_90.eql(&Tuple.point(0, 0, 1)));
+}
+
+test "rotation_y" {
+  const Matrix4 = SquareMatrix(4);
+  const pi = std.math.pi;
+  const sqrt = std.math.sqrt;
+
+  const rot_45 = Matrix4.rotation_y(pi / 4.0);
+  const rot_90 = Matrix4.rotation_y(pi / 2.0);
+  const p = Tuple.point(0, 0, 1);
+
+  const p_45 = rot_45.mult_vec(&p);
+  const p_90 = rot_90.mult_vec(&p);
+
+  try std.testing.expect(p_45.eql(&Tuple.point(sqrt(2.0) / 2.0, 0, sqrt(2.0) / 2.0)));
+  try std.testing.expect(p_90.eql(&Tuple.point(1, 0, 0)));
+}
+
+test "rotation_z" {
+  const Matrix4 = SquareMatrix(4);
+  const pi = std.math.pi;
+  const sqrt = std.math.sqrt;
+
+  const rot_45 = Matrix4.rotation_z(pi / 4.0);
+  const rot_90 = Matrix4.rotation_z(pi / 2.0);
+  const p = Tuple.point(0, 1, 0);
+
+  const p_45 = rot_45.mult_vec(&p);
+  const p_90 = rot_90.mult_vec(&p);
+
+  try std.testing.expect(p_45.eql(&Tuple.point(-sqrt(2.0) / 2.0, sqrt(2.0) / 2.0, 0)));
+  try std.testing.expect(p_90.eql(&Tuple.point(-1, 0, 0)));
+}
+
+test "shear" {
+  const Matrix4 = SquareMatrix(4);
+
+  const p = Tuple.point(2, 3, 4);
+
+  const s1 = Matrix4.shear(1, 0, 0, 0, 0, 0);
+  const s2 = Matrix4.shear(0, 1, 0, 0, 0, 0);
+  const s3 = Matrix4.shear(0, 0, 1, 0, 0, 0);
+  const s4 = Matrix4.shear(0, 0, 0, 1, 0, 0);
+  const s5 = Matrix4.shear(0, 0, 0, 0, 1, 0);
+  const s6 = Matrix4.shear(0, 0, 0, 0, 0, 1);
+
+  const p1 = s1.mult_vec(&p);
+  const p2 = s2.mult_vec(&p);
+  const p3 = s3.mult_vec(&p);
+  const p4 = s4.mult_vec(&p);
+  const p5 = s5.mult_vec(&p);
+  const p6 = s6.mult_vec(&p);
+
+  try std.testing.expect(p1.eql(&Tuple.point(5, 3, 4)));
+  try std.testing.expect(p2.eql(&Tuple.point(6, 3, 4)));
+  try std.testing.expect(p3.eql(&Tuple.point(2, 5, 4)));
+  try std.testing.expect(p4.eql(&Tuple.point(2, 7, 4)));
+  try std.testing.expect(p5.eql(&Tuple.point(2, 3, 6)));
+  try std.testing.expect(p6.eql(&Tuple.point(2, 3, 7)));
+}
+
+test "chaining" {
+  const Matrix4 = SquareMatrix(4);
+
+  const p = Tuple.point(1, 0, 1);
+
+  const a = Matrix4.rotation_x(std.math.pi / 2.0);
+  const b = Matrix4.scaling(5, 5, 5);
+  const c = Matrix4.translation(10, 5, 7);
+
+  const p2 = a.mult_vec(&p);
+  try std.testing.expect(p2.eql(&Tuple.point(1, -1, 0)));
+
+  const p3 = b.mult_vec(&p2);
+  try std.testing.expect(p3.eql(&Tuple.point(5, -5, 0)));
+
+  const p4 = c.mult_vec(&p3);
+  try std.testing.expect(p4.eql(&Tuple.point(15, 0, 7)));
+
+  const transform = c.mult(&b).mult(&a);
+  const p1 = transform.mult_vec(&p);
+  try std.testing.expect(p1.eql(&Tuple.point(15, 0, 7)));
 }

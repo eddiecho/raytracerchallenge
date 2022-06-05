@@ -9,7 +9,7 @@ pub const Canvas = struct {
 
   const Self = @This();
 
-  pub fn new(allocator: std.mem.Allocator, width: u32, height: u32) !Canvas {
+  pub fn new(allocator: *std.mem.Allocator, width: u32, height: u32) !Canvas {
     const data = try allocator.alloc(Color, width * height);
     return Canvas {
       .data = data,
@@ -28,17 +28,6 @@ pub const Canvas = struct {
     assert(x >= 0 and x < self.width);
     assert(y >= 0 and y < self.height);
     return self.data[(y * self.width) + x];
-  }
-
-  // this might be nuts, might just dump to file instead
-  pub fn to_string(self: *const Self, allocator: std.mem.Allocator) []const u8 {
-    var str = std.fmt.allocPrint(
-      allocator,
-      "{} {}",
-      .{self.width, self.height}
-    ) catch "err err err";
-
-    return str;
   }
 
   pub fn writeToPpm(self: *const Self) anyerror!usize {
