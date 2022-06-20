@@ -30,7 +30,7 @@ pub const Canvas = struct {
     return self.data[(y * self.width) + x];
   }
 
-  pub fn writeToPpm(self: *const Self) anyerror!usize {
+  pub fn writeToPpm(self: *const Self, base_alloc: std.mem.Allocator) anyerror!usize {
     const file = try std.fs.cwd().createFile(
       "canvas.ppm",
       .{ .read = true },
@@ -38,7 +38,7 @@ pub const Canvas = struct {
     defer file.close();
 
     // ppm spec says lines shouldn't be longer than 70 chars
-    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    var arena = std.heap.ArenaAllocator.init(base_alloc);
     defer arena.deinit();
 
     const allocator = arena.allocator();

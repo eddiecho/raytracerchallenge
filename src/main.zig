@@ -7,7 +7,7 @@ const SquareMatrix = @import("matrix.zig").SquareMatrix;
 pub fn main() anyerror!void {
   var gpa = std.heap.GeneralPurposeAllocator(.{}){};
 
-  // ch2_final(&gpa.allocator());
+  // try ch2_final(gpa.allocator());
   try ch4_final(gpa.allocator());
 }
 
@@ -49,7 +49,7 @@ fn ch2_final(allocator: std.mem.Allocator) !void {
     pic.set(x, y, red);
   }
 
-  _ = try pic.writeToPpm();
+  _ = try pic.writeToPpm(allocator);
 }
 
 const Matrix = SquareMatrix(4);
@@ -79,5 +79,5 @@ fn ch4_final(allocator: std.mem.Allocator) !void {
     ch4_set(&pic, point, white);
   }
 
-  _ = try pic.writeToPpm();
+  _ = try pic.writeToPpm(allocator);
 }
