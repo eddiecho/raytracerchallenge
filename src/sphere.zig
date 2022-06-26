@@ -7,41 +7,30 @@ const IntersectionPoint = _i.IntersectionPoint;
 const Intersection = _i.Intersection;
 const _matrix = @import("matrix.zig");
 const SquareMatrix = _matrix.SquareMatrix;
-const Transform = _matrix.Transform;
+const Transform = @import("transform.zig").Transform;
 
 const TransformMatrix = SquareMatrix(4);
 
 pub const Sphere = struct {
   id: usize,
-  transforms: std.ArrayList(Transform),
+  transform: TransformMatrix = TransformMatrix.identity(),
 
   const Self = @This();
 
   pub fn new() Self {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     return Self {
       .id = 0,
-      .transforms = std.ArrayList(Transform).init(gpa.allocator()),
     };
   }
 
   pub fn add_transform(self: *Self, transform: Transform) void {
-    // oh well
-    self.transforms.append(transform) catch unreachable;
+    self.transform = transform.toMatrix().mult(&self.transform);
   }
 
   // returns the t values when the ray intersects the sphere
   // only one if tangent, zero if misses
   pub fn intersect(self: *const Self, original_ray: Ray) Intersection {
-    // for now self is centered at (0,0,0)
-    var ray = original_ray;
-    for (self.transforms.items) |xform| {
-      ray = switch (xform) {
-        .Translate => |t| ray.translate(t[0], t[1], t[2]),
-        .Scalar => |s| ray.scale(s[0], s[1], s[2]),
-        .Rotation => unreachable,
-      };
-    }
+    const ray = original_ray.transform(&self.transform);
 
     // vector from sphere origin to ray origin
     const sphere_to_ray = ray.origin.sub(&Tuple.point(0, 0, 0));
@@ -143,7 +132,7 @@ test "transformed intersection scalar" {
   const v = Tuple.vector(0, 0, 1);
   const r = Ray.new(p, v);
 
-  s.add_transform(Transform { .Scalar = .{2, 2, 2} });
+  s.add_transform(Transform.scalar(2, 2, 2));
   const xs = s.intersect(r);
 
   switch (xs.points) {
@@ -162,7 +151,7 @@ test "transformed intersection translate" {
   const v = Tuple.vector(0, 0, 1);
   const r = Ray.new(p, v);
 
-  s.add_transform(Transform { .Translate = .{5, 0, 0}});
+  s.add_transform(Transform.translate(5, 0, 0));
   const xs = s.intersect(r);
 
   switch (xs.points) {

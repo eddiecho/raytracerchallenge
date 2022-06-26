@@ -21,19 +21,12 @@ pub const Ray = struct {
     return self.origin.add(&self.direction.scale(t));
   }
 
-  pub fn scale(self: *const Self, x: f32, y: f32, z: f32) Self {
-    const scale_matrix = TransformMatrix.scaling(x, y, z).invert() catch TransformMatrix.identity();
-    return Self {
-      .origin = scale_matrix.mult_vec(&self.origin),
-      .direction = scale_matrix.mult_vec(&self.direction),
-    };
-  }
+  pub fn transform(self: *const Self, orig_transform: *const TransformMatrix) Self {
+    const transform_matrix = orig_transform.invert() catch TransformMatrix.identity();
 
-  pub fn translate(self: *const Self, x: f32, y: f32, z: f32) Self {
-    const translate_matrix = TransformMatrix.translation(x, y, z).invert() catch TransformMatrix.identity();
     return Self {
-      .origin = translate_matrix.mult_vec(&self.origin),
-      .direction = self.direction,
+      .origin = transform_matrix.mult_vec(&self.origin),
+      .direction = transform_matrix.mult_vec(&self.direction),
     };
   }
 };
