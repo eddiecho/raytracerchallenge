@@ -10,6 +10,12 @@ const MatrixError = error {
   Uninvertible,
 };
 
+pub const Transform = union(enum) {
+  Translate: [3]f32,
+  Scalar: [3]f32,
+  Rotation: f32
+};
+
 pub fn SquareMatrix(comptime len: usize) type {
   return struct {
     const Self = @This();
