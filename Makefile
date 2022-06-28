@@ -3,6 +3,6 @@ test:
 build:
 	zig build
 run:
-	zig run src/main.zig && cp canvas.ppm /mnt/c/Users/photo/Desktop
+	time zig run src/main.zig && cp canvas.ppm /mnt/c/Users/photo/Desktop
 copy_out:
 	cp canvas.ppm /mnt/c/Users/photo/Desktop
