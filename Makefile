@@ -1,6 +1,5 @@
 test:
-	find src -name "*.zig" -not -path "*zig-cache*" -exec zig test {} \;
-
+	zig test src/main.zig
 build:
 	zig build
 run:

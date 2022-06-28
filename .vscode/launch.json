@@ -8,7 +8,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug",
-            "program": "${workspaceFolder}/src/zig-cache/o/078eec5a90c134ab382ad27162c315c9/test",
+            "program": "${workspaceFolder}/src/zig-cache/o/7a6aad2bcfa3611d964224053b4f7ff0/test",
             "args": ["src/main.zig"],
             "cwd": "${workspaceFolder}"
         }

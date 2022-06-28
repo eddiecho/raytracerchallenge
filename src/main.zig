@@ -116,3 +116,7 @@ fn ch5_final(allocator: std.mem.Allocator) !void {
 
   _ = try pic.writeToPpm(allocator);
 }
+
+test "all" {
+  std.testing.refAllDecls(@This());
+}
