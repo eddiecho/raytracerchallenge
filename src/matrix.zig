@@ -2,7 +2,7 @@ const std = @import("std");
 const assert = std.debug.assert;
 
 const utils = @import("utils.zig");
-const Tuple = @import("tuple.zig").Tuple;
+const Tuple = @import("primitives/tuple.zig").Tuple;
 
 const MatrixError = error{
     Uninvertible,
@@ -186,6 +186,8 @@ pub fn SquareMatrix(comptime len: usize) type {
         }
     };
 }
+
+pub const TransformMatrix = SquareMatrix(4);
 
 test "2x2" {
     const Matrix2 = SquareMatrix(2);

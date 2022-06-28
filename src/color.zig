@@ -1,5 +1,5 @@
 const std = @import("std");
-const Tuple = @import("tuple.zig").Tuple;
+const Tuple = @import("primitives/tuple.zig").Tuple;
 const utils = @import("utils.zig");
 
 pub const Color = struct {
@@ -7,37 +7,37 @@ pub const Color = struct {
 
     pub fn default() Color {
         return Color{
-            ._data = Tuple.vector(0, 0, 0),
+            ._data = Tuple.zero(),
         };
     }
 
     pub fn new(re: f32, gr: f32, bl: f32) Color {
         return Color{
-            ._data = Tuple.vector(re, gr, bl),
+            ._data = Tuple.init(re, gr, bl, 0),
         };
     }
 
     pub fn add(self: *const Color, other: *const Color) Color {
         return Color{
-            ._data = self._data.add(other._data),
+            ._data = self._data.elementwiseAdd(other._data),
         };
     }
 
     pub fn sub(self: *const Color, other: *const Color) Color {
         return Color{
-            ._data = self._data.sub(other._data),
+            ._data = self._data.elementwiseSub(other._data),
         };
     }
 
     pub fn scale(self: *const Color, scalar: f32) Color {
         return Color{
-            ._data = self._data.scale(scalar),
+            ._data = self._data.elementwiseScale(scalar),
         };
     }
 
     pub fn mult(self: *const Color, other: *const Color) Color {
         return Color{
-            ._data = self._data.mult(other._data),
+            ._data = self._data.elementwiseMult(other._data),
         };
     }
 

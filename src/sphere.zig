@@ -1,15 +1,14 @@
 const std = @import("std");
 const Ray = @import("ray.zig").Ray;
-const Tuple = @import("tuple.zig").Tuple;
 const utils = @import("utils.zig");
+const TransformMatrix = @import("matrix.zig").TransformMatrix;
+const Transform = @import("transform.zig").Transform;
+const Point = @import("primitives/point.zig").Point;
+const Vector = @import("primitives/vector.zig").Vector;
+
 const _i = @import("intersection.zig");
 const IntersectionPoint = _i.IntersectionPoint;
 const Intersection = _i.Intersection;
-const _matrix = @import("matrix.zig");
-const SquareMatrix = _matrix.SquareMatrix;
-const Transform = @import("transform.zig").Transform;
-
-const TransformMatrix = SquareMatrix(4);
 
 pub const Sphere = struct {
     id: usize,
@@ -33,7 +32,7 @@ pub const Sphere = struct {
         const ray = original_ray.transform(&self.transform);
 
         // vector from sphere origin to ray origin
-        const sphere_to_ray = ray.origin.sub(&Tuple.point(0, 0, 0));
+        const sphere_to_ray = ray.origin.sub(&Point.new(0, 0, 0));
         const a = ray.direction.dot(&ray.direction);
         const b = 2.0 * ray.direction.dot(&sphere_to_ray);
         const c = sphere_to_ray.dot(&sphere_to_ray) - 1.0;
@@ -57,8 +56,8 @@ const expect = std.testing.expect;
 
 test "ray intersection" {
     const s = Sphere.new();
-    const p1 = Tuple.point(0, 0, -5);
-    const v1 = Tuple.vector(0, 0, 1);
+    const p1 = Point.new(0, 0, -5);
+    const v1 = Vector.new(0, 0, 1);
     const r1 = Ray.new(p1, v1);
 
     const xs1 = s.intersect(r1);
@@ -71,8 +70,8 @@ test "ray intersection" {
         },
     }
 
-    const p2 = Tuple.point(0, 1, -5);
-    const v2 = Tuple.vector(0, 0, 1);
+    const p2 = Point.new(0, 1, -5);
+    const v2 = Vector.new(0, 0, 1);
     const r2 = Ray.new(p2, v2);
 
     const xs2 = s.intersect(r2);
@@ -84,8 +83,8 @@ test "ray intersection" {
         .Two => unreachable,
     }
 
-    const p3 = Tuple.point(0, 2, -5);
-    const v3 = Tuple.vector(0, 0, 1);
+    const p3 = Point.new(0, 2, -5);
+    const v3 = Vector.new(0, 0, 1);
     const r3 = Ray.new(p3, v3);
 
     const xs3 = s.intersect(r3);
@@ -98,8 +97,8 @@ test "ray intersection" {
 
 test "negative intersection" {
     const s = Sphere.new();
-    const p1 = Tuple.point(0, 0, 0);
-    const v1 = Tuple.vector(0, 0, 1);
+    const p1 = Point.new(0, 0, 0);
+    const v1 = Vector.new(0, 0, 1);
     const r1 = Ray.new(p1, v1);
 
     const xs1 = s.intersect(r1);
@@ -112,8 +111,8 @@ test "negative intersection" {
         },
     }
 
-    const p2 = Tuple.point(0, 0, 5);
-    const v2 = Tuple.vector(0, 0, 1);
+    const p2 = Point.new(0, 0, 5);
+    const v2 = Vector.new(0, 0, 1);
     const r2 = Ray.new(p2, v2);
     const xs2 = s.intersect(r2);
     switch (xs2.points) {
@@ -128,8 +127,8 @@ test "negative intersection" {
 
 test "transformed intersection scalar" {
     var s = Sphere.new();
-    const p = Tuple.point(0, 0, -5);
-    const v = Tuple.vector(0, 0, 1);
+    const p = Point.new(0, 0, -5);
+    const v = Vector.new(0, 0, 1);
     const r = Ray.new(p, v);
 
     s.add_transform(Transform.scalar(2, 2, 2));
@@ -147,8 +146,8 @@ test "transformed intersection scalar" {
 
 test "transformed intersection translate" {
     var s = Sphere.new();
-    const p = Tuple.point(0, 0, -5);
-    const v = Tuple.vector(0, 0, 1);
+    const p = Point.new(0, 0, -5);
+    const v = Vector.new(0, 0, 1);
     const r = Ray.new(p, v);
 
     s.add_transform(Transform.translate(5, 0, 0));
