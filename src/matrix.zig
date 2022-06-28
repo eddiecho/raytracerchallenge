@@ -46,7 +46,7 @@ pub fn SquareMatrix(comptime len: usize) type {
         pub fn eql(self: *const Self, other: *const Self) bool {
             var i: usize = 0;
             while (i < len) : (i += 1) {
-                if (!utils.f32_equals(self.data[i], other.data[i])) return false;
+                if (!utils.f32Equals(self.data[i], other.data[i])) return false;
             }
 
             return true;
@@ -75,7 +75,7 @@ pub fn SquareMatrix(comptime len: usize) type {
             };
         }
 
-        pub fn mult_vec(self: *const Self, vector: *const Tuple) Tuple {
+        pub fn multVec(self: *const Self, vector: *const Tuple) Tuple {
             assert(len == 4);
 
             const x = self.get(0, 0) * vector.x +
@@ -293,7 +293,7 @@ test "matrix-vector mult" {
     const a = Matrix4.init(data);
     const b = Tuple.init(1, 2, 3, 1);
     const c = Tuple.init(18, 24, 33, 1);
-    const ab = a.mult_vec(&b);
+    const ab = a.multVec(&b);
 
     try std.testing.expect(ab.eql(&c));
 }
@@ -313,7 +313,7 @@ test "identity matrix" {
     try std.testing.expect(a.eql(&ai));
 
     const b = Tuple.init(1, 2, 3, 4);
-    const bi = i.mult_vec(&b);
+    const bi = i.multVec(&b);
     try std.testing.expect(b.eql(&bi));
 }
 

@@ -21,15 +21,15 @@ pub const Transform = union(enum) {
         return Self{ .Scalar = .{ x, y, z } };
     }
 
-    pub fn rotation_x(r: f32) Self {
+    pub fn rotationX(r: f32) Self {
         return Self{ .RotationX = r };
     }
 
-    pub fn rotation_y(r: f32) Self {
+    pub fn rotationY(r: f32) Self {
         return Self{ .RotationY = r };
     }
 
-    pub fn rotation_z(r: f32) Self {
+    pub fn rotationZ(r: f32) Self {
         return Self{ .RotationZ = r };
     }
 
@@ -41,9 +41,9 @@ pub const Transform = union(enum) {
         return switch (transform) {
             .Translate => |t| translation_matrix(t[0], t[1], t[2]),
             .Scalar => |s| scaling_matrix(s[0], s[1], s[2]),
-            .RotationX => |r| rotation_x_matrix(r),
-            .RotationY => |r| rotation_y_matrix(r),
-            .RotationZ => |r| rotation_z_matrix(r),
+            .RotationX => |r| x_matrix(r),
+            .RotationY => |r| y_matrix(r),
+            .RotationZ => |r| z_matrix(r),
             .Shear => |s| shear_matrix(s[0], s[1], s[2], s[3], s[4], s[5]),
         };
     }
@@ -68,7 +68,7 @@ fn scaling_matrix(x: f32, y: f32, z: f32) TransformMatrix {
     return ret;
 }
 
-fn rotation_x_matrix(r: f32) TransformMatrix {
+fn x_matrix(r: f32) TransformMatrix {
     var ret = TransformMatrix.identity();
 
     ret.set(1, 1, @cos(r));
@@ -79,7 +79,7 @@ fn rotation_x_matrix(r: f32) TransformMatrix {
     return ret;
 }
 
-fn rotation_y_matrix(r: f32) TransformMatrix {
+fn y_matrix(r: f32) TransformMatrix {
     var ret = TransformMatrix.identity();
 
     ret.set(0, 0, @cos(r));
@@ -90,7 +90,7 @@ fn rotation_y_matrix(r: f32) TransformMatrix {
     return ret;
 }
 
-fn rotation_z_matrix(r: f32) TransformMatrix {
+fn z_matrix(r: f32) TransformMatrix {
     var ret = TransformMatrix.identity();
 
     ret.set(0, 0, @cos(r));
@@ -145,22 +145,22 @@ test "scaling" {
 test "rotation x" {
     const pi = std.math.pi;
 
-    const rotation_45 = Transform.rotation_x(pi / 4.0).toMatrix();
-    const rotation_90 = Transform.rotation_x(pi / 2.0).toMatrix();
+    const rot_45 = Transform.rotationX(pi / 4.0).toMatrix();
+    const rot_90 = Transform.rotationX(pi / 2.0).toMatrix();
     const p = Point.new(0, 1, 0);
 
-    const p_45 = p.transform(&rotation_45);
-    const p_90 = p.transform(&rotation_90);
+    const p_45 = p.transform(&rot_45);
+    const p_90 = p.transform(&rot_90);
 
     try std.testing.expect(p_45.eql(&Point.new(0, @sqrt(2.0) / 2.0, @sqrt(2.0) / 2.0)));
     try std.testing.expect(p_90.eql(&Point.new(0, 0, 1)));
 }
 
-test "rotation_y" {
+test "y" {
     const pi = std.math.pi;
 
-    const rot_45 = Transform.rotation_y(pi / 4.0).toMatrix();
-    const rot_90 = Transform.rotation_y(pi / 2.0).toMatrix();
+    const rot_45 = Transform.rotationY(pi / 4.0).toMatrix();
+    const rot_90 = Transform.rotationY(pi / 2.0).toMatrix();
     const p = Point.new(0, 0, 1);
 
     const p_45 = p.transform(&rot_45);
@@ -170,11 +170,11 @@ test "rotation_y" {
     try std.testing.expect(p_90.eql(&Point.new(1, 0, 0)));
 }
 
-test "rotation_z" {
+test "z" {
     const pi = std.math.pi;
 
-    const rot_45 = Transform.rotation_z(pi / 4.0).toMatrix();
-    const rot_90 = Transform.rotation_z(pi / 2.0).toMatrix();
+    const rot_45 = Transform.rotationZ(pi / 4.0).toMatrix();
+    const rot_90 = Transform.rotationZ(pi / 2.0).toMatrix();
     const p = Point.new(0, 1, 0);
 
     const p_45 = p.transform(&rot_45);
@@ -212,7 +212,7 @@ test "shear" {
 test "chaining" {
     const p = Point.new(1, 0, 1);
 
-    const a = Transform.rotation_x(std.math.pi / 2.0).toMatrix();
+    const a = Transform.rotationX(std.math.pi / 2.0).toMatrix();
     const b = Transform.scalar(5, 5, 5).toMatrix();
     const c = Transform.translate(10, 5, 7).toMatrix();
 

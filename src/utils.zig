@@ -6,7 +6,7 @@ pub fn xor(a: bool, b: bool) bool {
     return a != b;
 }
 
-pub fn f32_equals(a: f32, b: f32) bool {
+pub fn f32Equals(a: f32, b: f32) bool {
     return std.math.approxEqAbs(f32, a, b, EPSILON);
 }
 
@@ -36,7 +36,7 @@ pub fn readFile(allocator: std.mem.Allocator, filename: []const u8) anyerror![:0
 pub fn clamp(val: f32) u8 {
     if (val < 0.0) {
         return 0;
-    } else if (val > 1.0 or f32_equals(val, 1.0)) {
+    } else if (val > 1.0 or f32Equals(val, 1.0)) {
         return 255;
     } else {
         return @floatToInt(u8, val * 256);

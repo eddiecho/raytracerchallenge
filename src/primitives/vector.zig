@@ -47,9 +47,9 @@ pub const Vector = struct {
     }
 
     pub fn eql(self: *const Self, other: *const Self) bool {
-        const x = utils.f32_equals(self.X(), other.X());
-        const y = utils.f32_equals(self.Y(), other.Y());
-        const z = utils.f32_equals(self.Z(), other.Z());
+        const x = utils.f32Equals(self.X(), other.X());
+        const y = utils.f32Equals(self.Y(), other.Y());
+        const z = utils.f32Equals(self.Z(), other.Z());
 
         return (x and y and z);
     }
@@ -91,7 +91,7 @@ pub const Vector = struct {
 
     pub fn transform(self: *const Self, matrix: *const TransformMatrix) Self {
         return Self{
-            ._data = matrix.mult_vec(&self._data),
+            ._data = matrix.multVec(&self._data),
         };
     }
 };
@@ -117,19 +117,19 @@ test "sub two vectors" {
 
 test "magnitude" {
     const a = Vector.new(1, 0, 0);
-    try expect(utils.f32_equals(a.magnitude(), 1.0));
+    try expect(utils.f32Equals(a.magnitude(), 1.0));
 
     const b = Vector.new(0, 1, 0);
-    try expect(utils.f32_equals(b.magnitude(), 1.0));
+    try expect(utils.f32Equals(b.magnitude(), 1.0));
 
     const c = Vector.new(0, 0, 1);
-    try expect(utils.f32_equals(c.magnitude(), 1.0));
+    try expect(utils.f32Equals(c.magnitude(), 1.0));
 
     const d = Vector.new(1, 2, 3);
-    try expect(utils.f32_equals(d.magnitude(), @sqrt(14.0)));
+    try expect(utils.f32Equals(d.magnitude(), @sqrt(14.0)));
 
     const e = Vector.new(-1, -2, -3);
-    try expect(utils.f32_equals(e.magnitude(), @sqrt(14.0)));
+    try expect(utils.f32Equals(e.magnitude(), @sqrt(14.0)));
 }
 
 test "normalize" {
@@ -140,13 +140,13 @@ test "normalize" {
     const b = Vector.new(1, 2, 3);
     const bn = b.normalize();
     try expect(bn.eql(&Vector.new(0.26726, 0.53453, 0.80178)));
-    try expect(utils.f32_equals(bn.magnitude(), 1.0));
+    try expect(utils.f32Equals(bn.magnitude(), 1.0));
 }
 
 test "dot product" {
     const a = Vector.new(1, 2, 3);
     const b = Vector.new(2, 3, 4);
-    try expect(utils.f32_equals(a.dot(&b), 20));
+    try expect(utils.f32Equals(a.dot(&b), 20));
 }
 
 test "cross product" {

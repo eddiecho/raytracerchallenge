@@ -22,7 +22,7 @@ pub const Sphere = struct {
         };
     }
 
-    pub fn add_transform(self: *Self, transform: Transform) void {
+    pub fn addTransform(self: *Self, transform: Transform) void {
         self.transform = transform.toMatrix().mult(&self.transform);
     }
 
@@ -41,7 +41,7 @@ pub const Sphere = struct {
         var point: IntersectionPoint = undefined;
         if (del < 0) {
             point = IntersectionPoint.zero();
-        } else if (utils.f32_equals(del, 0.0)) {
+        } else if (utils.f32Equals(del, 0.0)) {
             point = IntersectionPoint.one(-b / (2 * a));
         } else {
             const sq = @sqrt(del);
@@ -65,8 +65,8 @@ test "ray intersection" {
         .Zero => unreachable,
         .One => unreachable,
         .Two => |i| {
-            try expect(utils.f32_equals(i[0], 4.0));
-            try expect(utils.f32_equals(i[1], 6.0));
+            try expect(utils.f32Equals(i[0], 4.0));
+            try expect(utils.f32Equals(i[1], 6.0));
         },
     }
 
@@ -78,7 +78,7 @@ test "ray intersection" {
     switch (xs2.points) {
         .Zero => unreachable,
         .One => |i| {
-            try expect(utils.f32_equals(i, 5.0));
+            try expect(utils.f32Equals(i, 5.0));
         },
         .Two => unreachable,
     }
@@ -106,8 +106,8 @@ test "negative intersection" {
         .Zero => unreachable,
         .One => unreachable,
         .Two => |i| {
-            try expect(utils.f32_equals(i[0], -1));
-            try expect(utils.f32_equals(i[1], 1));
+            try expect(utils.f32Equals(i[0], -1));
+            try expect(utils.f32Equals(i[1], 1));
         },
     }
 
@@ -119,8 +119,8 @@ test "negative intersection" {
         .Zero => unreachable,
         .One => unreachable,
         .Two => |i| {
-            try expect(utils.f32_equals(i[0], -6));
-            try expect(utils.f32_equals(i[1], -4));
+            try expect(utils.f32Equals(i[0], -6));
+            try expect(utils.f32Equals(i[1], -4));
         },
     }
 }
@@ -131,15 +131,15 @@ test "transformed intersection scalar" {
     const v = Vector.new(0, 0, 1);
     const r = Ray.new(p, v);
 
-    s.add_transform(Transform.scalar(2, 2, 2));
+    s.addTransform(Transform.scalar(2, 2, 2));
     const xs = s.intersect(r);
 
     switch (xs.points) {
         .Zero => unreachable,
         .One => unreachable,
         .Two => |i| {
-            try expect(utils.f32_equals(i[0], 3));
-            try expect(utils.f32_equals(i[1], 7));
+            try expect(utils.f32Equals(i[0], 3));
+            try expect(utils.f32Equals(i[1], 7));
         },
     }
 }
@@ -150,7 +150,7 @@ test "transformed intersection translate" {
     const v = Vector.new(0, 0, 1);
     const r = Ray.new(p, v);
 
-    s.add_transform(Transform.translate(5, 0, 0));
+    s.addTransform(Transform.translate(5, 0, 0));
     const xs = s.intersect(r);
 
     switch (xs.points) {

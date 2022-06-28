@@ -32,10 +32,10 @@ pub const Tuple = struct {
     }
 
     pub fn eql(self: *const Self, other: *const Self) bool {
-        const x = utils.f32_equals(self.x, other.x);
-        const y = utils.f32_equals(self.y, other.y);
-        const z = utils.f32_equals(self.z, other.z);
-        const w = utils.f32_equals(self.w, other.w);
+        const x = utils.f32Equals(self.x, other.x);
+        const y = utils.f32Equals(self.y, other.y);
+        const z = utils.f32Equals(self.z, other.z);
+        const w = utils.f32Equals(self.w, other.w);
 
         return (x and y and z and w);
     }

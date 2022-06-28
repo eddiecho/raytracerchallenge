@@ -34,7 +34,7 @@ pub const Point = struct {
         };
     }
 
-    pub fn sub_vec(self: *const Self, vec: *const Vector) Self {
+    pub fn subVec(self: *const Self, vec: *const Vector) Self {
         return Self{
             ._data = self._data.elementwiseSub(&vec._data),
         };
@@ -47,16 +47,16 @@ pub const Point = struct {
     }
 
     pub fn eql(self: *const Self, other: *const Self) bool {
-        const x = utils.f32_equals(self.X(), other.X());
-        const y = utils.f32_equals(self.Y(), other.Y());
-        const z = utils.f32_equals(self.Z(), other.Z());
+        const x = utils.f32Equals(self.X(), other.X());
+        const y = utils.f32Equals(self.Y(), other.Y());
+        const z = utils.f32Equals(self.Z(), other.Z());
 
         return (x and y and z);
     }
 
     pub fn transform(self: *const Self, matrix: *const TransformMatrix) Self {
         return Self{
-            ._data = matrix.mult_vec(&self._data),
+            ._data = matrix.multVec(&self._data),
         };
     }
 };
@@ -67,7 +67,7 @@ test "sub vector from point" {
     const p = Point.new(3, 2, 1);
     const v = Vector.new(5, 6, 7);
 
-    const pv = p.sub_vec(&v);
+    const pv = p.subVec(&v);
     try expect(pv.eql(&Point.new(-2, -4, -6)));
 }
 

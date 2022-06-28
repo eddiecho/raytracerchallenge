@@ -1,6 +1,7 @@
 const std = @import("std");
 const Color = @import("color.zig").Color;
 const Canvas = @import("canvas.zig").Canvas;
+const Transform = @import("transform.zig").Transform;
 const TransformMatrix = @import("matrix.zig").TransformMatrix;
 const Ray = @import("ray.zig").Ray;
 const Sphere = @import("sphere.zig").Sphere;
@@ -75,12 +76,12 @@ fn ch4_final(allocator: std.mem.Allocator) !void {
         it += 1;
         radian += (std.math.pi / 6.0);
     }) {
-        const init = TransformMatrix.translation(0, 200, 0);
-        const rotation = TransformMatrix.rotation_z(radian);
-        const final = TransformMatrix.translation(250, 250, 0);
+        const init = Transform.translation(0, 200, 0).toMatrix();
+        const rotation = Transform.rotationZ(radian).toMatrix();
+        const final = Transform.translation(250, 250, 0).toMatrix();
 
         const transform = final.mult(&rotation).mult(&init);
-        const point = transform.mult_vec(&origin);
+        const point = transform.multVec(&origin);
         ch4_set(&pic, point, white);
     }
 
