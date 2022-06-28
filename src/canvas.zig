@@ -9,9 +9,9 @@ pub const Canvas = struct {
 
     const Self = @This();
 
-    pub fn new(allocator: std.mem.Allocator, width: u32, height: u32) !Canvas {
+    pub fn new(allocator: std.mem.Allocator, width: u32, height: u32) !Self {
         const data = try allocator.alloc(Color, width * height);
-        return Canvas{
+        return Self{
             .data = data,
             .width = width,
             .height = height,
