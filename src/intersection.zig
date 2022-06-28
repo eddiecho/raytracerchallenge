@@ -8,15 +8,15 @@ pub const IntersectionPoint = union(enum) {
     const Self = @This();
 
     pub fn zero() Self {
-        return IntersectionPoint{ .Zero = {} };
+        return Self{ .Zero = {} };
     }
 
     pub fn one(p: f32) Self {
-        return IntersectionPoint{ .One = p };
+        return Self{ .One = p };
     }
 
     pub fn two(p1: f32, p2: f32) Self {
-        return IntersectionPoint{ .Two = .{ p1, p2 } };
+        return Self{ .Two = .{ p1, p2 } };
     }
 };
 
