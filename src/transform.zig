@@ -39,17 +39,17 @@ pub const Transform = union(enum) {
 
     pub fn toMatrix(transform: Self) TransformMatrix {
         return switch (transform) {
-            .Translate => |t| translation_matrix(t[0], t[1], t[2]),
-            .Scalar => |s| scaling_matrix(s[0], s[1], s[2]),
-            .RotationX => |r| x_matrix(r),
-            .RotationY => |r| y_matrix(r),
-            .RotationZ => |r| z_matrix(r),
-            .Shear => |s| shear_matrix(s[0], s[1], s[2], s[3], s[4], s[5]),
+            .Translate => |t| translationMatrix(t[0], t[1], t[2]),
+            .Scalar => |s| scalingMatrix(s[0], s[1], s[2]),
+            .RotationX => |r| xMatrix(r),
+            .RotationY => |r| yMatrix(r),
+            .RotationZ => |r| zMatrix(r),
+            .Shear => |s| shearMatrix(s[0], s[1], s[2], s[3], s[4], s[5]),
         };
     }
 };
 
-fn translation_matrix(x: f32, y: f32, z: f32) TransformMatrix {
+fn translationMatrix(x: f32, y: f32, z: f32) TransformMatrix {
     var ret = TransformMatrix.identity();
     ret.set(0, 3, x);
     ret.set(1, 3, y);
@@ -58,7 +58,7 @@ fn translation_matrix(x: f32, y: f32, z: f32) TransformMatrix {
     return ret;
 }
 
-fn scaling_matrix(x: f32, y: f32, z: f32) TransformMatrix {
+fn scalingMatrix(x: f32, y: f32, z: f32) TransformMatrix {
     var ret = TransformMatrix.identity();
 
     ret.set(0, 0, x);
@@ -68,7 +68,7 @@ fn scaling_matrix(x: f32, y: f32, z: f32) TransformMatrix {
     return ret;
 }
 
-fn x_matrix(r: f32) TransformMatrix {
+fn xMatrix(r: f32) TransformMatrix {
     var ret = TransformMatrix.identity();
 
     ret.set(1, 1, @cos(r));
@@ -79,7 +79,7 @@ fn x_matrix(r: f32) TransformMatrix {
     return ret;
 }
 
-fn y_matrix(r: f32) TransformMatrix {
+fn yMatrix(r: f32) TransformMatrix {
     var ret = TransformMatrix.identity();
 
     ret.set(0, 0, @cos(r));
@@ -90,7 +90,7 @@ fn y_matrix(r: f32) TransformMatrix {
     return ret;
 }
 
-fn z_matrix(r: f32) TransformMatrix {
+fn zMatrix(r: f32) TransformMatrix {
     var ret = TransformMatrix.identity();
 
     ret.set(0, 0, @cos(r));
@@ -101,7 +101,7 @@ fn z_matrix(r: f32) TransformMatrix {
     return ret;
 }
 
-fn shear_matrix(xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) TransformMatrix {
+fn shearMatrix(xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) TransformMatrix {
     var ret = TransformMatrix.identity();
 
     ret.set(0, 1, xy);
