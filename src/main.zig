@@ -1,10 +1,12 @@
 const std = @import("std");
-const Color = @import("color.zig").Color;
+
 const Canvas = @import("canvas.zig").Canvas;
 const Transform = @import("transform.zig").Transform;
 const TransformMatrix = @import("matrix.zig").TransformMatrix;
 const Ray = @import("ray.zig").Ray;
 const Sphere = @import("sphere.zig").Sphere;
+
+const Color = @import("primitives/color.zig").Color;
 const Point = @import("primitives/point.zig").Point;
 const Vector = @import("primitives/vector.zig").Vector;
 

@@ -1,6 +1,6 @@
 const std = @import("std");
-const Tuple = @import("primitives/tuple.zig").Tuple;
-const utils = @import("utils.zig");
+const Tuple = @import("tuple.zig").Tuple;
+const utils = @import("../utils.zig");
 
 pub const Color = struct {
     _data: Tuple,

@@ -1,6 +1,6 @@
 const std = @import("std");
 const assert = std.debug.assert;
-const Color = @import("color.zig").Color;
+const Color = @import("primitives/color.zig").Color;
 
 pub const Canvas = struct {
     data: []Color,
