@@ -1,6 +1,6 @@
 const std = @import("std");
 
-const ch5 = @import("endings/ch5.zig");
+const ch5 = @import("chapters/ch5.zig");
 
 pub fn main() anyerror!void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};

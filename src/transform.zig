@@ -156,7 +156,7 @@ test "rotation x" {
     try std.testing.expect(p_90.eql(&Point.new(0, 0, 1)));
 }
 
-test "y" {
+test "rotation y" {
     const pi = std.math.pi;
 
     const rot_45 = Transform.rotationY(pi / 4.0).toMatrix();
@@ -170,7 +170,7 @@ test "y" {
     try std.testing.expect(p_90.eql(&Point.new(1, 0, 0)));
 }
 
-test "z" {
+test "rotation z" {
     const pi = std.math.pi;
 
     const rot_45 = Transform.rotationZ(pi / 4.0).toMatrix();

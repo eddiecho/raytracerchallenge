@@ -13,6 +13,7 @@ const Intersection = _i.Intersection;
 pub const Sphere = struct {
     id: usize,
     transform: TransformMatrix = TransformMatrix.identity(),
+    transformed: bool = false,
 
     const Self = @This();
 
@@ -24,12 +25,13 @@ pub const Sphere = struct {
 
     pub fn addTransform(self: *Self, transform: Transform) void {
         self.transform = transform.toMatrix().mult(&self.transform);
+        self.transformed = true;
     }
 
     // returns the t values when the ray intersects the sphere
     // only one if tangent, zero if misses
     pub fn intersect(self: *const Self, original_ray: Ray) Intersection {
-        const ray = original_ray.transform(&self.transform);
+        const ray = if (self.transformed) original_ray.transform(&self.transform) else original_ray;
 
         // vector from sphere origin to ray origin
         const sphere_to_ray = ray.origin.sub(&Point.new(0, 0, 0));
@@ -49,6 +51,20 @@ pub const Sphere = struct {
         }
 
         return Intersection.new(point, @ptrToInt(self));
+    }
+
+    pub fn normalAt(self: *const Self, world_point: Point) !Vector {
+        if (self.transformed) {
+            const inverted = try self.transform.invert();
+            const object_point = world_point.transform(&inverted);
+            const object_normal = object_point.sub(&Point.new(0, 0, 0));
+            var world_normal = object_normal.transform(&inverted.transpose());
+            world_normal._data.w = 0;
+
+            return world_normal.normalize();
+        } else {
+            return world_point.sub(&Point.new(0, 0, 0)).normalize();
+        }
     }
 };
 
@@ -158,4 +174,33 @@ test "transformed intersection translate" {
         .One => unreachable,
         .Two => unreachable,
     }
+}
+
+test "normal untransformed" {
+    const s = Sphere.new();
+
+    const n1 = try s.normalAt(Point.new(1, 0, 0));
+    const n2 = try s.normalAt(Point.new(0, 1, 0));
+    const n3 = try s.normalAt(Point.new(0, 0, 1));
+    const n4 = try s.normalAt(Point.new(@sqrt(3.0) / 3.0, @sqrt(3.0) / 3.0, @sqrt(3.0) / 3.0));
+
+    try expect(n1.eql(&Vector.new(1, 0, 0)));
+    try expect(n2.eql(&Vector.new(0, 1, 0)));
+    try expect(n3.eql(&Vector.new(0, 0, 1)));
+    try expect(n4.eql(&Vector.new(@sqrt(3.0) / 3.0, @sqrt(3.0) / 3.0, @sqrt(3.0) / 3.0)));
+
+    try expect(n4.eql(&n4.normalize()));
+}
+
+test "normal transformed" {
+    var s1 = Sphere.new();
+    s1.addTransform(Transform.translate(0, 1, 0));
+    const n1 = try s1.normalAt(Point.new(0, 1.70711, -0.70711));
+    try expect(n1.eql(&Vector.new(0, 0.70711, -0.70711)));
+
+    var s2 = Sphere.new();
+    s2.addTransform(Transform.rotationZ(std.math.pi / 5.0));
+    s2.addTransform(Transform.scalar(1, 0.5, 1));
+    const n2 = try s2.normalAt(Point.new(0, @sqrt(2.0) / 2.0, -@sqrt(2.0) / 2.0));
+    try expect(n2.eql(&Vector.new(0, 0.97014, -0.24254)));
 }

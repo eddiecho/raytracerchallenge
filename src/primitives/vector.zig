@@ -94,6 +94,11 @@ pub const Vector = struct {
             ._data = matrix.multVec(&self._data),
         };
     }
+
+    pub fn reflect(self: *const Self, other: *const Self) Self {
+        const scalar = 2.0 * self.dot(other);
+        return self.sub(&other.scale(scalar));
+    }
 };
 
 const expect = std.testing.expect;
@@ -157,4 +162,16 @@ test "cross product" {
 
     try expect(ab.eql(&Vector.new(-1, 2, -1)));
     try expect(ba.eql(&Vector.new(1, -2, 1)));
+}
+
+test "reflection" {
+    const v1 = Vector.new(1, -1, 0);
+    const n1 = Vector.new(0, 1, 0);
+    const r1 = v1.reflect(&n1);
+    try expect(r1.eql(&Vector.new(1, 1, 0)));
+
+    const v2 = Vector.new(0, -1, 0);
+    const n2 = Vector.new(@sqrt(2.0) / 2.0, @sqrt(2.0) / 2.0, 0);
+    const r2 = v2.reflect(&n2);
+    try expect(r2.eql(&Vector.new(1, 0, 0)));
 }
