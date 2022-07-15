@@ -37,4 +37,3 @@ pub fn final(allocator: std.mem.Allocator) !void {
 
     _ = try pic.writeToPpm(allocator);
 }
-

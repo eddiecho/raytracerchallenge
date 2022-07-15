@@ -1,12 +1,15 @@
 const std = @import("std");
-const Ray = @import("ray.zig").Ray;
-const utils = @import("utils.zig");
-const TransformMatrix = @import("matrix.zig").TransformMatrix;
-const Transform = @import("transform.zig").Transform;
-const Point = @import("primitives/point.zig").Point;
-const Vector = @import("primitives/vector.zig").Vector;
 
-const _i = @import("intersection.zig");
+const Color = @import("../primitives/color.zig").Color;
+const Light = @import("../shader/light.zig").Light;
+const Material = @import("../shader/material.zig").Material;
+const Ray = @import("../ray.zig").Ray;
+const utils = @import("../utils.zig");
+const TransformMatrix = @import("../matrix.zig").TransformMatrix;
+const Transform = @import("../transform.zig").Transform;
+const Point = @import("../primitives/point.zig").Point;
+const Vector = @import("../primitives/vector.zig").Vector;
+const _i = @import("../intersection.zig");
 const IntersectionPoint = _i.IntersectionPoint;
 const Intersection = _i.Intersection;
 
@@ -14,6 +17,7 @@ pub const Sphere = struct {
     id: usize,
     transform: TransformMatrix = TransformMatrix.identity(),
     transformed: bool = false,
+    material: Material = Material.default(),
 
     const Self = @This();
 

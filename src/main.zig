@@ -1,11 +1,10 @@
 const std = @import("std");
-
-const ch5 = @import("chapters/ch5.zig");
+const ch6 = @import("chapters/ch6.zig");
 
 pub fn main() anyerror!void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
 
-    try ch5.final(gpa.allocator());
+    try ch6.final(gpa.allocator());
 }
 
 test "all" {

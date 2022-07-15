@@ -21,13 +21,13 @@ pub const Color = struct {
 
     pub fn add(self: *const Self, other: *const Self) Self {
         return Self{
-            ._data = self._data.elementwiseAdd(other._data),
+            ._data = self._data.elementwiseAdd(&other._data),
         };
     }
 
     pub fn sub(self: *const Self, other: *const Self) Self {
         return Self{
-            ._data = self._data.elementwiseSub(other._data),
+            ._data = self._data.elementwiseSub(&other._data),
         };
     }
 
@@ -39,8 +39,12 @@ pub const Color = struct {
 
     pub fn mult(self: *const Self, other: *const Self) Self {
         return Self{
-            ._data = self._data.elementwiseMult(other._data),
+            ._data = self._data.elementwiseMult(&other._data),
         };
+    }
+
+    pub fn eql(self: *const Self, other: *const Self) bool {
+        return self._data.eql(&other._data);
     }
 
     pub fn r(self: *const Self) f32 {
