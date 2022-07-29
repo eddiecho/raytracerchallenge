@@ -60,3 +60,37 @@ pub const Intersection = struct {
         return ret;
     }
 };
+
+// better handling than Intersection directly,
+// basically more convenient for some actions i guess
+// idk we'll see
+pub const Collision = struct {
+    object_idx: usize,
+    t: f32,
+
+    fn comparator(context: void, lhs: Collision, rhs: Collision) bool {
+        _ = context;
+        return lhs.t < rhs.t;
+    }
+};
+
+pub fn sortIntersections(allocator: std.mem.Allocator, xs: std.ArrayList(Intersection)) !std.ArrayList(f32) {
+    var ret = std.ArrayList(f32).init(allocator);
+    for (xs.items) |x| {
+        switch (x.points) {
+            .Zero => continue,
+            .One => |t| try ret.append(t),
+            .Two => |ts| {
+                try ret.append(ts[0]);
+                try ret.append(ts[1]);
+            }
+        }
+    }
+
+    std.sort.sort(f32, ret.items, {}, comptime std.sort.asc(f32));
+    return ret;
+}
+
+pub fn sortCollisions(cs: std.ArrayList(Collision)) void {
+    std.sort.sort(Collision, cs.items, {}, Collision.comparator);
+}

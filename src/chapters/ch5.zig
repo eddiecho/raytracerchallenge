@@ -37,7 +37,7 @@ pub fn final(allocator: std.mem.Allocator) !void {
             const direction = wall_point.sub(&ray_origin);
             const ray = Ray.new(ray_origin, direction);
 
-            const intersection = sphere.intersect(ray);
+            const intersection = sphere.intersect(&ray);
             switch (intersection.points) {
                 .Zero => continue,
                 .One, .Two => pic.set(x, y, red),
