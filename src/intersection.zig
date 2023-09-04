@@ -68,9 +68,15 @@ pub const Collision = struct {
     object_idx: usize,
     t: f32,
 
-    fn comparator(context: void, lhs: Collision, rhs: Collision) bool {
+    const Self = @This();
+
+    fn comparator(context: void, lhs: Self, rhs: Self) bool {
         _ = context;
         return lhs.t < rhs.t;
+    }
+
+    pub fn sort(cs: std.ArrayList(Self)) void {
+        std.sort.sort(Self, cs.items, {}, Self.comparator);
     }
 };
 
@@ -91,6 +97,3 @@ pub fn sortIntersections(allocator: std.mem.Allocator, xs: std.ArrayList(Interse
     return ret;
 }
 
-pub fn sortCollisions(cs: std.ArrayList(Collision)) void {
-    std.sort.sort(Collision, cs.items, {}, Collision.comparator);
-}

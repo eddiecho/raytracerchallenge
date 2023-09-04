@@ -54,12 +54,13 @@ pub const Sphere = struct {
             point = IntersectionPoint.two((-b - sq) / (2 * a), (-b + sq) / (2 * a));
         }
 
-        return Intersection.new(point, @ptrToInt(self));
+        return Intersection.new(point, self.id);
     }
 
-    pub fn normalAt(self: *const Self, world_point: Point) !Vector {
+    pub fn normalAt(self: *const Self, world_point: Point) Vector {
         if (self.transformed) {
-            const inverted = try self.transform.invert();
+            // in practice, this should never error out
+            const inverted = self.transform.invert() catch unreachable;
             const object_point = world_point.transform(&inverted);
             const object_normal = object_point.sub(&Point.new(0, 0, 0));
             var world_normal = object_normal.transform(&inverted.transpose());
@@ -183,10 +184,10 @@ test "transformed intersection translate" {
 test "normal untransformed" {
     const s = Sphere.new();
 
-    const n1 = try s.normalAt(Point.new(1, 0, 0));
-    const n2 = try s.normalAt(Point.new(0, 1, 0));
-    const n3 = try s.normalAt(Point.new(0, 0, 1));
-    const n4 = try s.normalAt(Point.new(@sqrt(3.0) / 3.0, @sqrt(3.0) / 3.0, @sqrt(3.0) / 3.0));
+    const n1 = s.normalAt(Point.new(1, 0, 0));
+    const n2 = s.normalAt(Point.new(0, 1, 0));
+    const n3 = s.normalAt(Point.new(0, 0, 1));
+    const n4 = s.normalAt(Point.new(@sqrt(3.0) / 3.0, @sqrt(3.0) / 3.0, @sqrt(3.0) / 3.0));
 
     try expect(n1.eql(&Vector.new(1, 0, 0)));
     try expect(n2.eql(&Vector.new(0, 1, 0)));
@@ -199,12 +200,12 @@ test "normal untransformed" {
 test "normal transformed" {
     var s1 = Sphere.new();
     s1.addTransform(Transform.translate(0, 1, 0));
-    const n1 = try s1.normalAt(Point.new(0, 1.70711, -0.70711));
+    const n1 = s1.normalAt(Point.new(0, 1.70711, -0.70711));
     try expect(n1.eql(&Vector.new(0, 0.70711, -0.70711)));
 
     var s2 = Sphere.new();
     s2.addTransform(Transform.rotationZ(std.math.pi / 5.0));
     s2.addTransform(Transform.scalar(1, 0.5, 1));
-    const n2 = try s2.normalAt(Point.new(0, @sqrt(2.0) / 2.0, -@sqrt(2.0) / 2.0));
+    const n2 = s2.normalAt(Point.new(0, @sqrt(2.0) / 2.0, -@sqrt(2.0) / 2.0));
     try expect(n2.eql(&Vector.new(0, 0.97014, -0.24254)));
 }

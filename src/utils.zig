@@ -10,8 +10,8 @@ pub fn f32Equals(a: f32, b: f32) bool {
     return std.math.approxEqAbs(f32, a, b, EPSILON);
 }
 
-pub fn debugPrintStruct(obj: anytype) anyerror!void {
-    std.debug.print("{s}\n", .{@typeName(@TypeOf(obj))});
+pub fn debugPrintStruct(obj: anytype) void {
+    std.debug.print("\n{s}\n", .{@typeName(@TypeOf(obj))});
 
     inline for (std.meta.fields(@TypeOf(obj))) |field| {
         std.debug.print("\t{s} = {any}\n", .{

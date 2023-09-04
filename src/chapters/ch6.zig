@@ -12,7 +12,7 @@ const Vector = @import("../primitives/vector.zig").Vector;
 
 fn get_color(sphere: *const Sphere, ray: *const Ray, point_light: *const light.Light, t: f32) !Color {
     const obj_point = ray.position(t);
-    const normal = try sphere.normalAt(obj_point);
+    const normal = sphere.normalAt(obj_point);
     const eye = ray.direction.scale(-1);
 
     return light.lightAt(
